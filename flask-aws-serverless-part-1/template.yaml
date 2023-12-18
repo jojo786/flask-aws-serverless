@@ -4,49 +4,52 @@ Description: flask-aws-serverless-part-1
 
 Globals:
   Function:
+    Tags:
+      project: "flask-aws-serverless"
     Timeout: 3
     MemorySize: 128
+    Runtime: python3.12
+    Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:17
     LoggingConfig:
       LogFormat: JSON
-      
+      #LogGroup: !Sub /aws/lambda/${AWS::StackName}
+    Architectures:
+      - arm64
+    Environment:
+      Variables:
+        AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+        PORT: 8000
+        #PostsTable: !Ref PostsTable
+
 Resources:
   HelloWorldFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello_world/
+      CodeUri: flask/
       Handler: run.sh
-      Runtime: python3.12
-      Architectures:
-      - arm64
-      Environment:
-        Variables:
-          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
-          PORT: 8000
-          PostsTable: !Ref PostsTable
-      Layers:
-        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:17
       Events:
         HelloWorld:
           Type: HttpApi
-    Connectors:
-      PostsTableConnector:
-        Properties:
-          Destination: 
-            Id: PostsTable
-          Permissions: 
-            - Read
-            - Write 
+    #Connectors:
+    #  PostsTableConnector:
+    #    Properties:
+    #      Destination: 
+    #        Id: PostsTable
+    #      Permissions: 
+    #        - Read
+    #        - Write 
 
-  PostsTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
-      KeySchema:
-        - AttributeName: id
-          KeyType: HASH
-      BillingMode: PAY_PER_REQUEST
+  #PostsTable:
+  #  Type: AWS::DynamoDB::Table
+  #  Properties:
+  #    AttributeDefinitions:
+  #      - AttributeName: id
+  #        AttributeType: S
+  #    KeySchema:
+  #      - AttributeName: id
+  #        KeyType: HASH
+  #    BillingMode: PAY_PER_REQUEST
 
 Outputs:
   HelloWorldApi:
