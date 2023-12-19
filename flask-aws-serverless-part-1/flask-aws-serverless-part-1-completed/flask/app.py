@@ -3,9 +3,7 @@ import os
 from boto3.dynamodb.conditions import Key
 from boto3 import resource
 from werkzeug.exceptions import abort
-import uuid
 from datetime import datetime
-from decimal import Decimal 
 
 dynamodb = resource('dynamodb')
 posts_table = dynamodb.Table(os.environ["PostsTable"])
@@ -112,5 +110,4 @@ def delete(id):
     except Exception as error:
         print("dynamo delete failed:", error, flush=True)  
         
-    
     return redirect(url_for('index'))
