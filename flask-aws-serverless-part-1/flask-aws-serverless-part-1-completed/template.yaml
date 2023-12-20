@@ -15,7 +15,7 @@ Globals:
       LogFormat: JSON
       #LogGroup: !Sub /aws/lambda/${AWS::StackName}
     Architectures:
-      - arm64
+      - arm64 #Graviton: cheaper and faster
     
 
 Resources:
@@ -23,7 +23,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: flask/
-      Handler: run.sh
+      Handler: run.sh #required for the Lambda Web Adapter
       Events:
         HelloWorld:
           Type: HttpApi
