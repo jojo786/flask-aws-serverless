@@ -1,0 +1,9 @@
+# Flask on AWS Serverless: A learning journey
+
+About 3 years ago I learnt some basic Python, which I've used almost exclusively to build back-end APIs on AWS Serverless, mostly Lambda. This includes a monitoring solution on AWS,  an event-driven API integration solution, a  load shedding telegram bot, a Slack bot that posts AWS News, a CDK project, and other telegram bots. None of them are front-end web apps, and thats something that has always been a gap for me. Some years back I did some Ruby on Rails, but did'nt build anything meaningful, and I've since forgotten most of it. So I've decided to learn Flask as a tool to build some web apps: primarily because its still python, and a micro-framework with a minimal learning curve. And I wanted to re-use what I've learned building python apps on AWS Serverless, and see how I can build Flask apps that run on AWS Serverless.
+
+There are other AWS service that can be used to run Flask on AWS, like using EC2, Elastic Beanstalk, ECS or Lightsail. But I am specifically looking to use serverless services on AWS, because I don't want to manage servers or even containers, and I want to fully automate the deployment process, and if I eventually have to scale, I don't want to really have to think about scaling. Yes, this is still server-side, which means I'm still avoiding client-side web apps (React, etc), but baby steps for now. 
+
+So in this series of posts, we will learn to build some Flask apps on AWS, and figure things out along the way. I'll probably get some stuff wrong, so Errors and omissions excepted. Onwards!
+
+Part 1: https://hacksaw.co.za/blog/flask-on-aws-serverless-a-learning-journey-part-1/

@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: flask-aws-serverless-part-1
+
+Globals:
+  Function:
+    Tags:
+      project: "flask-aws-serverless"
+    Timeout: 3
+    MemorySize: 128
+    Runtime: python3.12
+    Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:17
+    LoggingConfig:
+      LogFormat: JSON
+    Architectures:
+      - arm64 #Graviton: cheaper and faster
+    
+
+Resources:
+  HelloWorldFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: flask/
+      Handler: run.sh #required for the Lambda Web Adapter
+      Events:
+        HelloWorld:
+          Type: HttpApi
+      Environment:
+        Variables:
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          PORT: 8000
+  #         PostsTable: !Ref PostsTable
+  #   Connectors:
+  #     PostsTableConnector:
+  #       Properties:
+  #         Destination: 
+  #           Id: PostsTable
+  #         Permissions: 
+  #           - Read
+  #           - Write 
+
+  # PostsTable:
+  #   Type: AWS::DynamoDB::Table
+  #   Properties:
+  #     AttributeDefinitions:
+  #       - AttributeName: id
+  #         AttributeType: N
+  #     KeySchema:
+  #       - AttributeName: id
+  #         KeyType: HASH
+  #     BillingMode: PAY_PER_REQUEST
+  #     Tags:
+  #      - Value: "flask-aws-serverless"
+  #        Key: "project"
+
+Outputs:
+  HelloWorldApi:
+    Description: API Gateway endpoint URL for Hello World function
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  # DynamoDBTable:
+  #   Description: DynamoDB Table
+  #   Value: !Ref PostsTable  
