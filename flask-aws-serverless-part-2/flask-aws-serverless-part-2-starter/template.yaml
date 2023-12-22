@@ -2,17 +2,38 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: flask-aws-serverless-part-1
 
+Parameters:
+  DBClusterName:
+    Description: Aurora DB cluster name.
+    Type: String
+    Default: aurora-flask-cluster-2
+  DatabaseName:
+    Description: Aurora database name.
+    Type: String
+    Default: aurora_flask_db_2
+    AllowedPattern: '[a-zA-Z][a-zA-Z0-9_]*'
+    ConstraintDescription: Must begin with a letter and only contain alphanumeric characters.
+  DBAdminUserName:
+    Description: The admin user name.
+    Type: String
+    Default: admin_user
+    MinLength: '2'
+    MaxLength: '16'
+    AllowedPattern: '[a-zA-Z0-9_]+'
+    ConstraintDescription: Must be between 2 to 16 alphanumeric characters.
+
 Globals:
   Function:
     Tags:
       project: "flask-aws-serverless"
-    Timeout: 3
+    Timeout: 30
     MemorySize: 128
     Runtime: python3.12
     Layers:
         - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:17
     LoggingConfig:
       LogFormat: JSON
+      #LogGroup: !Sub /aws/lambda/${AWS::StackName}
     Architectures:
       - arm64 #Graviton: cheaper and faster
     
@@ -28,36 +49,49 @@ Resources:
           Type: HttpApi
       Environment:
         Variables:
-          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
-          PORT: 8000
-  #         PostsTable: !Ref PostsTable
-  #   Connectors:
-  #     PostsTableConnector:
-  #       Properties:
-  #         Destination: 
-  #           Id: PostsTable
-  #         Permissions: 
-  #           - Read
-  #           - Write 
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap #required for the Lambda Web Adapter
+          PORT: 8000 #required for the Lambda Web Adapter
+          DBClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
+          DBName: !Ref DatabaseName
+          SecretArn: !Ref DBSecret
+  #     Policies: # Creates an IAM Role that defines the services the function can access and which actions the function can perform
+  #       - AWSSecretsManagerGetSecretValuePolicy:
+  #           SecretArn: !Ref DBSecret
+  #       - Statement:
+  #         - Effect: Allow
+  #           Action: 'rds-data:ExecuteStatement'
+  #           Resource: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
 
-  # PostsTable:
-  #   Type: AWS::DynamoDB::Table
+  
+  # DBSecret: # Secrets Manager secret
+  #   Type: 'AWS::SecretsManager::Secret'
   #   Properties:
-  #     AttributeDefinitions:
-  #       - AttributeName: id
-  #         AttributeType: N
-  #     KeySchema:
-  #       - AttributeName: id
-  #         KeyType: HASH
-  #     BillingMode: PAY_PER_REQUEST
-  #     Tags:
-  #      - Value: "flask-aws-serverless"
-  #        Key: "project"
+  #     Name: !Sub '${DBClusterName}-AuroraUserSecret'
+  #     Description: RDS database auto-generated user password
+  #     GenerateSecretString:
+  #       SecretStringTemplate: !Sub '{"username": "${DBAdminUserName}"}'
+  #       GenerateStringKey: password
+  #       PasswordLength: 30
+  #       ExcludeCharacters: '"@/\'
+
+  
+  # AuroraCluster: # Aurora Serverless DB Cluster with Data API
+  #   Type: 'AWS::RDS::DBCluster'
+  #   Properties:
+  #     DBClusterIdentifier: !Ref DBClusterName
+  #     MasterUsername: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:username}}'
+  #     MasterUserPassword: !Sub '{{resolve:secretsmanager:${DBSecret}:SecretString:password}}'
+  #     DatabaseName: !Ref DatabaseName
+  #     Engine: aurora-mysql
+  #     EngineMode: serverless
+  #     EnableHttpEndpoint: true # Enable the Data API for Aurora Serverles
+  #     ScalingConfiguration:
+  #       AutoPause: true
+  #       MinCapacity: 1
+  #       MaxCapacity: 2
+  #       SecondsUntilAutoPause: 3600
 
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Hello World function
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
-  # DynamoDBTable:
-  #   Description: DynamoDB Table
-  #   Value: !Ref PostsTable  
