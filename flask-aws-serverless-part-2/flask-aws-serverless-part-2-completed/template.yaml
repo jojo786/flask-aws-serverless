@@ -6,11 +6,11 @@ Parameters:
   DBClusterName:
     Description: Aurora DB cluster name.
     Type: String
-    Default: aurora-flask-cluster-2
+    Default: aurora-flask-cluster
   DatabaseName:
     Description: Aurora database name.
     Type: String
-    Default: aurora_flask_db_2
+    Default: aurora_flask_db
     AllowedPattern: '[a-zA-Z][a-zA-Z0-9_]*'
     ConstraintDescription: Must begin with a letter and only contain alphanumeric characters.
   DBAdminUserName:
