@@ -1,4 +1,6 @@
-# flask-aws-serverless-part-1
+# flask-aws-serverless-part-2
+
+Part 2: https://hacksaw.co.za/blog/flask-on-aws-serverless-a-learning-journey-part-2/
 
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
