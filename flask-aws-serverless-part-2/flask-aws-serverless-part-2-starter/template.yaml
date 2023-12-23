@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: flask-aws-serverless-part-1
+Description: flask-aws-serverless-part-2
 
 Parameters:
   DBClusterName:
@@ -51,6 +51,7 @@ Resources:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap #required for the Lambda Web Adapter
           PORT: 8000 #required for the Lambda Web Adapter
+          AWS_REGION: !Ref AWS::Region
   #         DBClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
   #         DBName: !Ref DatabaseName
   #         SecretArn: !Ref DBSecret
@@ -73,6 +74,9 @@ Resources:
   #       GenerateStringKey: password
   #       PasswordLength: 30
   #       ExcludeCharacters: '"@/\'
+  #     Tags:
+  #      - Value: "flask-aws-serverless"
+  #        Key: "project"
 
   
   # AuroraCluster: # Aurora Serverless DB Cluster with Data API
@@ -90,6 +94,9 @@ Resources:
   #       MinCapacity: 1
   #       MaxCapacity: 2
   #       SecondsUntilAutoPause: 3600
+  #     Tags:
+  #      - Value: "flask-aws-serverless"
+  #        Key: "project"
 
 Outputs:
   HelloWorldApi:

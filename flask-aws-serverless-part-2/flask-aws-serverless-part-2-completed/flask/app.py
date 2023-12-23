@@ -3,19 +3,15 @@ import os
 from boto3.dynamodb.conditions import Key
 from boto3 import resource
 from werkzeug.exceptions import abort
-from datetime import datetime
 import boto3
-from botocore.exceptions import ClientError
 from botocore.config import Config
 
-
-cluster_arn = os.environ['DBClusterArn']
+DBClusterArn = os.environ['DBClusterArn']
 DBName = os.environ['DBName']
-secret_arn = os.environ['SecretArn']
+SecretArn = os.environ['SecretArn']
 my_config = Config(
-        region_name = "eu-west-1")
+        region_name = os.environ['AWS_REGION'])
 client = boto3.client('rds-data', config=my_config)
-
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '454543gtgdfgdfgfdgfd'
@@ -25,13 +21,12 @@ def index():
     posts = []
 
     response = client.execute_statement(
-        resourceArn=cluster_arn,
-        secretArn=secret_arn,
+        resourceArn=DBClusterArn,
+        secretArn=SecretArn,
         database=DBName,
         sql="""SELECT * FROM posts"""
     )
 
-    print(response)
     for record in response['records']:
         posts.append({
             'id': record[0]['longValue'],
@@ -52,8 +47,8 @@ def get_post(post_id):
     post = {}
     
     response = client.execute_statement(
-        resourceArn=cluster_arn,
-        secretArn=secret_arn,
+        resourceArn=DBClusterArn,
+        secretArn=SecretArn,
         database=DBName,
         sql="""SELECT * FROM posts WHERE id = :id""",
         parameters=[
@@ -81,15 +76,13 @@ def create():
 
         title = request.form['title']
         content = request.form['content']
-        created = str(datetime.now())
-        id = int(datetime.now().timestamp())
         
         if not title:
             flash('Title is required!')
         else:
             response = client.execute_statement(
-                resourceArn=cluster_arn,
-                secretArn=secret_arn,
+                resourceArn=DBClusterArn,
+                secretArn=SecretArn,
                 database=DBName,
                 sql="""
                 INSERT INTO posts (title, content) 
@@ -123,8 +116,8 @@ def edit(id):
             flash('Title is required!')
         else:
             response = client.execute_statement(
-                resourceArn=cluster_arn,
-                secretArn=secret_arn,
+                resourceArn=DBClusterArn,
+                secretArn=SecretArn,
                 database=DBName,
                 sql="""
                 UPDATE posts SET title = :title, content = :content
@@ -155,8 +148,8 @@ def delete(id):
     post = get_post(id)
 
     response = client.execute_statement(
-        resourceArn=cluster_arn,
-        secretArn=secret_arn,
+        resourceArn=DBClusterArn,
+        secretArn=SecretArn,
         database=DBName,
         sql="""DELETE FROM posts WHERE id = :id""",
         parameters=[

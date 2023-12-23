@@ -51,6 +51,7 @@ Resources:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap #required for the Lambda Web Adapter
           PORT: 8000 #required for the Lambda Web Adapter
+          AWS_REGION: !Ref AWS::Region
           DBClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
           DBName: !Ref DatabaseName
           SecretArn: !Ref DBSecret
@@ -73,6 +74,9 @@ Resources:
         GenerateStringKey: password
         PasswordLength: 30
         ExcludeCharacters: '"@/\'
+      Tags:
+        - Value: "flask-aws-serverless"
+          Key: "project"
 
   
   AuroraCluster: # Aurora Serverless DB Cluster with Data API
@@ -90,8 +94,20 @@ Resources:
         MinCapacity: 1
         MaxCapacity: 2
         SecondsUntilAutoPause: 3600
+      Tags:
+        - Value: "flask-aws-serverless"
+          Key: "project"
 
 Outputs:
   HelloWorldApi:
     Description: API Gateway endpoint URL for Hello World function
     Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/"
+  DBClusterArn:
+    Description: Aurora DB Cluster Resource ARN
+    Value: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
+  DBName:
+    Description: Aurora Database Name
+    Value: !Ref DatabaseName
+  SecretArn:
+    Description: Secrets Manager Secret ARN
+    Value: !Ref DBSecret

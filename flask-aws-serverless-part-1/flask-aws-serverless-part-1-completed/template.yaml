@@ -51,6 +51,9 @@ Resources:
         - AttributeName: id
           KeyType: HASH
       BillingMode: PAY_PER_REQUEST
+      Tags:
+          - Value: "flask-aws-serverless"
+            Key: "project"
 
 Outputs:
   HelloWorldApi:
