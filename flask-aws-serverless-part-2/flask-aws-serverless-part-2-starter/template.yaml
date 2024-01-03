@@ -51,7 +51,6 @@ Resources:
         Variables:
           AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap #required for the Lambda Web Adapter
           PORT: 8000 #required for the Lambda Web Adapter
-          AWS_REGION: !Ref AWS::Region
   #         DBClusterArn: !Sub 'arn:aws:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBClusterName}'
   #         DBName: !Ref DatabaseName
   #         SecretArn: !Ref DBSecret
