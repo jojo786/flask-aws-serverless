@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
-Description: flask-aws-serverless-part-1
+Description: flask-aws-serverless-part-2
 
 Parameters:
   DBClusterName:
@@ -33,7 +33,7 @@ Globals:
         - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:17
     LoggingConfig:
       LogFormat: JSON
-      #LogGroup: !Sub /aws/lambda/${AWS::StackName}
+      LogGroup: !Sub /aws/lambda/${AWS::StackName}
     Architectures:
       - arm64 #Graviton: cheaper and faster
     
